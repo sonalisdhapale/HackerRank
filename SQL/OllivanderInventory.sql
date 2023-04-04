@@ -10,4 +10,24 @@ FROM WANDS AS A
 JOIN WANDS_PROPERTY AS B ON A.CODE = B.CODE
 WHERE IS_EVIL = 0
 GROUP BY power, age) AS Q ON bb.age = AG AND aa.coins_needed = MCN AND aa.power = PW
-ORDER BY aa.power DESC, bb.age DESC
+ORDER BY aa.power DESC, bb.age DESC;
+
+
+
+SELECT 
+    id,age
+    ,coins_needed
+    ,power 
+FROM (
+SELECT 
+    w.id
+    ,wp.age
+    ,w.coins_needed
+    ,w.power
+    ,rank() OVER(PARTITION BY wp.code, w.power ORDER BY w.coins_needed) rnk
+FROM wands w
+INNER JOIN wands_property wp 
+ON w.code = wp.code
+WHERE wp.is_evil = 0
+)z WHERE rnk = 1 ORDER BY power DESC,age DESC
+;
